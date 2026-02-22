@@ -36,26 +36,36 @@ const Index = () => {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [played, setPlayed] = useState(0);
+  const [playKey, setPlayKey] = useState(0);
   const playerRef = useRef<HTMLVideoElement>(null);
 
   const track = tracks[currentTrack];
 
   const handlePlayPause = useCallback(() => {
-    setIsPlaying((prev) => !prev);
+    setIsPlaying((prev) => {
+      if (!prev) {
+        // Force remount with playing=true to bypass mobile autoplay restrictions
+        setPlayKey((k) => k + 1);
+      }
+      return !prev;
+    });
   }, []);
 
   const handlePrev = useCallback(() => {
     setCurrentTrack((p) => (p === 0 ? tracks.length - 1 : p - 1));
+    setPlayKey((k) => k + 1);
     setIsPlaying(true);
   }, []);
 
   const handleNext = useCallback(() => {
     setCurrentTrack((p) => (p === tracks.length - 1 ? 0 : p + 1));
+    setPlayKey((k) => k + 1);
     setIsPlaying(true);
   }, []);
 
   const handleTrackClick = (index: number) => {
     setCurrentTrack(index);
+    setPlayKey((k) => k + 1);
     setIsPlaying(true);
   };
 
@@ -156,6 +166,7 @@ const Index = () => {
           <div className="w-full md:flex-1 border neon-border-solid rounded-lg overflow-hidden neon-block-glow">
             <div className="aspect-video">
               <ReactPlayer
+                key={playKey}
                 ref={playerRef}
                 src={track.videoUrl}
                 playing={isPlaying}
