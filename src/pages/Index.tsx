@@ -123,7 +123,7 @@ const Index = () => {
 
             {/* Controls row */}
             <div className="flex items-center gap-5 md:gap-6 mt-5 md:mt-8 w-full">
-              <button onClick={handlePrev} className="text-muted-foreground hover:text-foreground transition-colors md:text-primary md:hover:text-primary">
+              <button onClick={handlePrev} className="text-muted-foreground hover:text-foreground transition-colors">
                 <SkipBack size={20} className="md:w-6 md:h-6" />
               </button>
               <button
@@ -132,7 +132,7 @@ const Index = () => {
               >
                 {isPlaying ? <Pause size={18} className="md:w-6 md:h-6" /> : <Play size={18} className="ml-0.5 md:w-6 md:h-6" />}
               </button>
-              <button onClick={handleNext} className="text-muted-foreground hover:text-foreground transition-colors md:text-primary md:hover:text-primary">
+              <button onClick={handleNext} className="text-muted-foreground hover:text-foreground transition-colors">
                 <SkipForward size={20} className="md:w-6 md:h-6" />
               </button>
               <div className="flex items-center gap-2 md:gap-3 ml-auto mr-4">
