@@ -19,9 +19,9 @@ interface Track {
 
 const tracks: Track[] = [
   { id: 4, title: "One Millisecond Heartbeat", artist: "MagicBlock", duration: "2:30", videoUrl: "https://www.youtube.com/watch?v=e_141zx5M4g", titleUrl: title4, prototype: "Synthwave" },
-  { id: 1, title: "Fast & Furious. Smooth. On-chain", artist: "MagicBlock", duration: "2:07", videoUrl: "https://www.youtube.com/watch?v=MI1hEPVODbA", titleUrl: title1, prototype: "Luis Fonsi – Despacito" },
   { id: 2, title: "Magic Moments", artist: "MagicBlock", duration: "2:34", videoUrl: "https://www.youtube.com/watch?v=ZmNj2tOAy5U", titleUrl: title2, prototype: "Perry Como – Magic Moments" },
   { id: 3, title: "Fast, Loud & On-Chain!", artist: "MagicBlock", duration: "2:07", videoUrl: "https://www.youtube.com/watch?v=oG1mDdZwQj0", titleUrl: title3, prototype: "The Offspring – The Kids Aren't Alright" },
+  { id: 1, title: "Fast & Furious. Smooth. On-chain", artist: "MagicBlock", duration: "2:07", videoUrl: "https://www.youtube.com/watch?v=MI1hEPVODbA", titleUrl: title1, prototype: "Luis Fonsi – Despacito" },
 ];
 
 const formatTime = (seconds: number) => {
