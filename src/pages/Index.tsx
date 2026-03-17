@@ -168,19 +168,17 @@ const Index = () => {
 
           {/* Right: Video Player */}
           <div className="w-full md:flex-1 border neon-border-solid rounded-lg overflow-hidden neon-block-glow">
-            <div className="aspect-video">
-              <ReactPlayer
+            <div className="aspect-video relative">
+              <iframe
                 key={playKey}
-                ref={playerRef}
-                src={track.videoUrl}
-                playing={isPlaying}
-                volume={muted ? 0 : volume}
-                onTimeUpdate={handleTimeUpdate}
-                onLoadedMetadata={(e: React.SyntheticEvent<HTMLVideoElement>) => setDuration(e.currentTarget.duration)}
-                onEnded={handleNext}
-                width="100%"
-                height="100%"
+                src={`https://www.youtube.com/embed/${track.videoUrl.split("v=")[1]?.split("&")[0]}?autoplay=${isPlaying ? 1 : 0}&controls=0&disablekb=1&modestbranding=1&rel=0&mute=${muted ? 1 : 0}`}
+                allow="autoplay; encrypted-media"
+                allowFullScreen={false}
+                className="w-full h-full"
+                style={{ border: "none" }}
               />
+              {/* Transparent overlay to prevent interaction */}
+              <div className="absolute inset-0 z-10" />
             </div>
           </div>
         </div>
