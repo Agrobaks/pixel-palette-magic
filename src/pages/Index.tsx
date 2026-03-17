@@ -40,14 +40,12 @@ const Index = () => {
   const [duration, setDuration] = useState(0);
   const [played, setPlayed] = useState(0);
   const [playKey, setPlayKey] = useState(0);
-  const playerRef = useRef<HTMLVideoElement>(null);
 
   const track = tracks[currentTrack];
 
   const handlePlayPause = useCallback(() => {
     setIsPlaying((prev) => {
       if (!prev) {
-        // Force remount with playing=true to bypass mobile autoplay restrictions
         setPlayKey((k) => k + 1);
       }
       return !prev;
@@ -70,24 +68,6 @@ const Index = () => {
     setCurrentTrack(index);
     setPlayKey((k) => k + 1);
     setIsPlaying(true);
-  };
-
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const fraction = (e.clientX - rect.left) / rect.width;
-    const video = playerRef.current;
-    if (video && video.duration) {
-      video.currentTime = fraction * video.duration;
-    }
-    setProgress(fraction);
-  };
-
-  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
-    const el = e.currentTarget;
-    if (el.duration) {
-      setPlayed(el.currentTime);
-      setProgress(el.currentTime / el.duration);
-    }
   };
 
   return (
