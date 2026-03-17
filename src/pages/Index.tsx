@@ -1,5 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { SkipBack, SkipForward, Play, Pause, Volume2, VolumeX } from "lucide-react";
+import { useYouTubePlayer } from "@/hooks/use-youtube-player";
 import logo from "@/assets/logo.png";
 import title1 from "@/assets/title1.jpg";
 import title2 from "@/assets/title2.jpg";
@@ -31,43 +32,54 @@ const formatTime = (seconds: number) => {
   return `${m}:${s.toString().padStart(2, "0")}`;
 };
 
+const getVideoId = (url: string) => url.split("v=")[1]?.split("&")[0] || "";
+
 const Index = () => {
   const [currentTrack, setCurrentTrack] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.7);
   const [muted, setMuted] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [played, setPlayed] = useState(0);
-  const [playKey, setPlayKey] = useState(0);
+  const [playerKey, setPlayerKey] = useState(0);
 
   const track = tracks[currentTrack];
+  const videoId = getVideoId(track.videoUrl);
+
+  const { currentTime, duration, progress, play, pause, seekTo } = useYouTubePlayer({
+    videoId,
+    containerId: "yt-player",
+    autoplay: isPlaying,
+    volume,
+    muted,
+    onStateChange: (playing) => setIsPlaying(playing),
+  });
 
   const handlePlayPause = useCallback(() => {
-    setIsPlaying((prev) => {
-      if (!prev) {
-        setPlayKey((k) => k + 1);
-      }
-      return !prev;
-    });
-  }, []);
+    if (isPlaying) {
+      pause();
+    } else {
+      play();
+    }
+  }, [isPlaying, play, pause]);
 
   const handlePrev = useCallback(() => {
     setCurrentTrack((p) => (p === 0 ? tracks.length - 1 : p - 1));
-    setPlayKey((k) => k + 1);
     setIsPlaying(true);
   }, []);
 
   const handleNext = useCallback(() => {
     setCurrentTrack((p) => (p === tracks.length - 1 ? 0 : p + 1));
-    setPlayKey((k) => k + 1);
     setIsPlaying(true);
   }, []);
 
   const handleTrackClick = (index: number) => {
     setCurrentTrack(index);
-    setPlayKey((k) => k + 1);
     setIsPlaying(true);
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const fraction = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    seekTo(fraction);
   };
 
   return (
@@ -137,8 +149,11 @@ const Index = () => {
 
             {/* Progress bar */}
             <div className="mt-5 md:mt-6 flex items-center gap-3 text-xs md:text-sm w-full">
-              <span className="w-10 text-right tabular-nums text-neon-purple font-semibold">{formatTime(played)}</span>
-              <div className="flex-1 progress-bar-track bg-muted/50 rounded-full relative">
+              <span className="w-10 text-right tabular-nums text-neon-purple font-semibold">{formatTime(currentTime)}</span>
+              <div
+                className="flex-1 progress-bar-track bg-muted/50 rounded-full relative cursor-pointer"
+                onClick={handleSeek}
+              >
                 <div className="h-full progress-neon rounded-full transition-all" style={{ width: `${progress * 100}%` }} />
               </div>
               <span className="w-10 tabular-nums text-muted-foreground">{formatTime(duration)}</span>
@@ -148,14 +163,7 @@ const Index = () => {
           {/* Right: Video Player */}
           <div className="w-full md:flex-1 border neon-border-solid rounded-lg overflow-hidden neon-block-glow">
             <div className="aspect-video relative">
-              <iframe
-                key={playKey}
-                src={`https://www.youtube.com/embed/${track.videoUrl.split("v=")[1]?.split("&")[0]}?autoplay=${isPlaying ? 1 : 0}&controls=0&disablekb=1&modestbranding=1&rel=0&mute=${muted ? 1 : 0}`}
-                allow="autoplay; encrypted-media"
-                allowFullScreen={false}
-                className="w-full h-full"
-                style={{ border: "none" }}
-              />
+              <div id="yt-player" className="w-full h-full" />
               {/* Transparent overlay to prevent interaction */}
               <div className="absolute inset-0 z-10" />
             </div>
