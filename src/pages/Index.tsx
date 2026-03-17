@@ -1,6 +1,5 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import { SkipBack, SkipForward, Play, Pause, Volume2, VolumeX } from "lucide-react";
-import ReactPlayer from "react-player";
 import logo from "@/assets/logo.png";
 import title1 from "@/assets/title1.jpg";
 import title2 from "@/assets/title2.jpg";
