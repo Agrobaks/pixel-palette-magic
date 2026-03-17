@@ -1,6 +1,5 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import { SkipBack, SkipForward, Play, Pause, Volume2, VolumeX } from "lucide-react";
-import ReactPlayer from "react-player";
 import logo from "@/assets/logo.png";
 import title1 from "@/assets/title1.jpg";
 import title2 from "@/assets/title2.jpg";
@@ -41,14 +40,12 @@ const Index = () => {
   const [duration, setDuration] = useState(0);
   const [played, setPlayed] = useState(0);
   const [playKey, setPlayKey] = useState(0);
-  const playerRef = useRef<HTMLVideoElement>(null);
 
   const track = tracks[currentTrack];
 
   const handlePlayPause = useCallback(() => {
     setIsPlaying((prev) => {
       if (!prev) {
-        // Force remount with playing=true to bypass mobile autoplay restrictions
         setPlayKey((k) => k + 1);
       }
       return !prev;
@@ -71,24 +68,6 @@ const Index = () => {
     setCurrentTrack(index);
     setPlayKey((k) => k + 1);
     setIsPlaying(true);
-  };
-
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const fraction = (e.clientX - rect.left) / rect.width;
-    const video = playerRef.current;
-    if (video && video.duration) {
-      video.currentTime = fraction * video.duration;
-    }
-    setProgress(fraction);
-  };
-
-  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
-    const el = e.currentTarget;
-    if (el.duration) {
-      setPlayed(el.currentTime);
-      setProgress(el.currentTime / el.duration);
-    }
   };
 
   return (
@@ -159,7 +138,7 @@ const Index = () => {
             {/* Progress bar */}
             <div className="mt-5 md:mt-6 flex items-center gap-3 text-xs md:text-sm w-full">
               <span className="w-10 text-right tabular-nums text-neon-purple font-semibold">{formatTime(played)}</span>
-              <div className="flex-1 progress-bar-track bg-muted/50 rounded-full cursor-pointer relative" onClick={handleSeek}>
+              <div className="flex-1 progress-bar-track bg-muted/50 rounded-full relative">
                 <div className="h-full progress-neon rounded-full transition-all" style={{ width: `${progress * 100}%` }} />
               </div>
               <span className="w-10 tabular-nums text-muted-foreground">{formatTime(duration)}</span>
@@ -168,19 +147,17 @@ const Index = () => {
 
           {/* Right: Video Player */}
           <div className="w-full md:flex-1 border neon-border-solid rounded-lg overflow-hidden neon-block-glow">
-            <div className="aspect-video">
-              <ReactPlayer
+            <div className="aspect-video relative">
+              <iframe
                 key={playKey}
-                ref={playerRef}
-                src={track.videoUrl}
-                playing={isPlaying}
-                volume={muted ? 0 : volume}
-                onTimeUpdate={handleTimeUpdate}
-                onLoadedMetadata={(e: React.SyntheticEvent<HTMLVideoElement>) => setDuration(e.currentTarget.duration)}
-                onEnded={handleNext}
-                width="100%"
-                height="100%"
+                src={`https://www.youtube.com/embed/${track.videoUrl.split("v=")[1]?.split("&")[0]}?autoplay=${isPlaying ? 1 : 0}&controls=0&disablekb=1&modestbranding=1&rel=0&mute=${muted ? 1 : 0}`}
+                allow="autoplay; encrypted-media"
+                allowFullScreen={false}
+                className="w-full h-full"
+                style={{ border: "none" }}
               />
+              {/* Transparent overlay to prevent interaction */}
+              <div className="absolute inset-0 z-10" />
             </div>
           </div>
         </div>
